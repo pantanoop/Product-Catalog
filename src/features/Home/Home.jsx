@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import ProductCard from "../Product/ProductCard";
 import "./Home.css";
 import { productService } from "../../services/product.service";
-
-const LIMIT = 16;
+const LIMIT = 8;
 
 function Home({ searchTerm, addToCart }) {
   const [products, setProducts] = useState([]);
@@ -11,24 +10,17 @@ function Home({ searchTerm, addToCart }) {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [debouncedTerm, setDebouncedTerm] = useState("");
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedTerm(searchTerm);
+    fetchProducts();
+  }, [page]);
+
+  useEffect(() => {
+    if (searchTerm.trim()) {
       setPage(1);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  useEffect(() => {
-    if (debouncedTerm.trim()) {
       searchProduct();
-    } else {
-      fetchProducts();
     }
-  }, [debouncedTerm, page]);
+  }, [searchTerm]);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -38,25 +30,22 @@ function Home({ searchTerm, addToCart }) {
       setProducts(data.products);
       setTotal(data.total);
       setSearchedProducts([]);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
+
   const searchProduct = async () => {
     setLoading(true);
     try {
       const skip = (page - 1) * LIMIT;
-      const data = await productService.searchProducts(
-        debouncedTerm,
-        LIMIT,
-        skip
-      );
+      const data = await productService.searchProducts(searchTerm, LIMIT, skip);
       setSearchedProducts(data.products);
       setTotal(data.total);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -87,17 +76,20 @@ function Home({ searchTerm, addToCart }) {
       </div>
 
       <div className="pagination">
-        <button disabled={page === 1} onClick={() => setPage(page - 1)}>
+        <button
+          disabled={page === 1}
+          onClick={() => setPage((prev) => prev - 1)}
+        >
           Prev
         </button>
 
         <span>
-          {page}....{totalPages}
+          Page {page} of {totalPages}
         </span>
 
         <button
           disabled={page === totalPages}
-          onClick={() => setPage(page + 1)}
+          onClick={() => setPage((prev) => prev + 1)}
         >
           Next
         </button>
