@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import "../styles/Navbar.css";
+import "./Navbar.css";
 
 function Navbar({ searchTerm, setSearchTerm, cartCount = 0 }) {
   return (

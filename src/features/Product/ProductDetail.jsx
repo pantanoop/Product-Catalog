@@ -1,16 +1,18 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { productService } from "../../services/product.service";
+import "./productDetail.css";
 
 function ProductDetail({ addToCart }) {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProduct = async () => {
+      setLoading(true);
       try {
-        const res = await fetch(`https://dummyjson.com/products/${id}`);
-        const data = await res.json();
+        const data = await productService.getProductById(id);
         setProduct(data);
       } catch (error) {
         console.error("Failed to fetch product", error);
@@ -22,32 +24,25 @@ function ProductDetail({ addToCart }) {
     fetchProduct();
   }, [id]);
 
-  if (loading) return <h2 style={{ padding: "20px" }}>Loading...</h2>;
-
+  if (loading) return <h2 className="pd-loading">Loading...</h2>;
   if (!product) return <h2>Product not found</h2>;
 
   return (
-    <div style={{ padding: "20px", maxWidth: "900px", margin: "auto" }}>
+    <div className="product-detail">
       <Link to="/">
-        <button style={{ marginBottom: "20px" }}>⬅ Back to Home</button>
+        <button className="back-btn">⬅ Back to Home</button>
       </Link>
 
-      <div style={{ display: "flex", gap: "30px" }}>
-       
+      <div className="product-wrapper">
         <img
           src={product.thumbnail}
           alt={product.title}
-          style={{
-            width: "300px",
-            borderRadius: "10px",
-            border: "1px solid #ddd"
-          }}
+          className="product-img"
         />
 
-        
-        <div>
+        <div className="product-info">
           <h1>{product.title}</h1>
-          <p style={{ color: "#555" }}>{product.description}</p>
+          <p className="product-desc">{product.description}</p>
 
           <h2>$ {product.price}</h2>
           <p>
@@ -61,18 +56,7 @@ function ProductDetail({ addToCart }) {
             <b>Brand:</b> {product.brand}
           </p>
 
-          <button
-            onClick={() => addToCart(product)}
-            style={{
-              marginTop: "15px",
-              padding: "10px 20px",
-              backgroundColor: "#2563eb",
-              color: "#fff",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer"
-            }}
-          >
+          <button className="add-cart-btn" onClick={() => addToCart(product)}>
             Add to Cart 🛒
           </button>
         </div>

@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
-import Home from "./pages/Home";
-import Cart from "./pages/Cart";
-import ProductDetail from "./pages/ProductDetail";
+import Home from "./features/Home/Home";
+import Cart from "./features/Cart/Cart";
+import ProductDetail from "./features/Product/ProductDetail";
 import Navbar from "./components/Navbar";
 
 function App() {
@@ -17,11 +17,11 @@ function App() {
   }, [cartItems]);
 
   const addToCart = (product) => {
-    setCartItems(prev => {
-      const existing = prev.find(item => item.id === product.id);
+    setCartItems((prev) => {
+      const existing = prev.find((item) => item.id === product.id);
 
       if (existing) {
-        return prev.map(item =>
+        return prev.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
@@ -33,22 +33,20 @@ function App() {
   };
 
   const increaseQty = (id) => {
-    setCartItems(prev =>
-      prev.map(item =>
+    setCartItems((prev) =>
+      prev.map((item) =>
         item.id === id ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
   };
 
   const decreaseQty = (id) => {
-    setCartItems(prev =>
+    setCartItems((prev) =>
       prev
-        .map(item =>
-          item.id === id
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
+        .map((item) =>
+          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
         )
-        .filter(item => item.quantity > 0)
+        .filter((item) => item.quantity > 0)
     );
   };
 
@@ -76,8 +74,8 @@ function App() {
           }
         />
         <Route
-        path="/product/:id"
-        element={<ProductDetail addToCart={addToCart} />}
+          path="/product/:id"
+          element={<ProductDetail addToCart={addToCart} />}
         />
       </Routes>
     </>
@@ -85,4 +83,3 @@ function App() {
 }
 
 export default App;
-
